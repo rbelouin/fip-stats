@@ -13,7 +13,7 @@ import models._
 
 class EventController extends Controller {
 
-  def addEvent = Action.async(parse.json) { req =>
+  def addEvent = CorsAction.async(parse.json) { req =>
     val ip = Ip.removeLastBytes(req.remoteAddress).getOrElse("127.0.0.1")
     val userAgent = req.headers.get("User-Agent")
     val datetime = ZonedDateTime.now
