@@ -14,14 +14,18 @@ import models._
 class EventController extends Controller {
 
   def addEvent = CorsAction.async(parse.json) { req =>
-    val ip = Ip.removeLastBytes(req.remoteAddress).getOrElse("127.0.0.1")
+    val ip =  req.headers.get("X-Forwarded-For")
+                .getOrElse(req.remoteAddress)
+
+    val ipPrefix = Ip.removeLastBytes(ip).getOrElse("127.0")
+
     val userAgent = req.headers.get("User-Agent")
     val datetime = ZonedDateTime.now
 
     val o_input = EventInput(req.body)
 
     val o_event = o_input.map {
-      input => Event.fromEventInput(input, ip, userAgent, datetime)
+      input => Event.fromEventInput(input, ipPrefix, userAgent, datetime)
     }
 
     val o_document = o_event.map {
