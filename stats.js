@@ -1,5 +1,18 @@
 const stats = db.getCollection("stats");
 
+const totalBrowsers = stats.aggregate([{
+  $group: {
+    _id: "$browserId",
+  }
+},{
+  $group: {
+    _id: null,
+    total: {
+      $sum: 1
+    }
+  }
+}]);
+
 const browsers = stats.aggregate([{
   $project: {
     browserId: "$browserId",
@@ -46,6 +59,7 @@ const paths = stats.aggregate([{
 }]);
 
 printjson({
+  totalBrowsers: totalBrowsers.toArray(),
   browsers: browsers.toArray(),
   paths: paths.toArray()
 });
